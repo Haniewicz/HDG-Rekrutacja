@@ -6,7 +6,7 @@ use App\Models\Service;
 class ServiceService
 {
 
-    public function store(string $name, int $company_id, mixed $price_netto, int $vat)
+    public function store(string $name, int $company_id, float $price_netto, int $vat)
     {
         $service = new Service;
         $service['service_name'] = $name;
@@ -22,7 +22,7 @@ class ServiceService
         }
     }
 
-    public function update(string $name, int $company_id, mixed $price_netto, int $vat, bool $active, object $service)
+    public function update(string $name, int $company_id, float $price_netto, int $vat, bool $active, object $service)
     {
         $service['service_name'] = $name;
         $service['company_id'] = $company_id;
