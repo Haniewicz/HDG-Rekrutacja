@@ -3,30 +3,23 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class CompanyUpdateRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize()
-    {
-        return true;
-    }
-
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, mixed>
-     */
     public function rules()
     {
         return [
-            'name' => 'required',
-            'nip' => 'required|numeric|min_digits:10|max_digits:10|unique:companies',
-            'active' => 'required|integer|min:0|max:1'
+            'name' => ['required'],
+            'nip' => ['required', 'numeric', 'min_digits:10', 'max_digits:10', Rule::unique('companies')->ignore($this->company->id)],
+            'active' => ['required', 'boolean']
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'nip.unique' => 'Firma z takim numerem nip już istnieje',
         ];
     }
 }

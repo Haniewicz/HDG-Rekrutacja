@@ -6,94 +6,65 @@ use Illuminate\Http\Request;
 use App\Http\Requests\ServiceStoreRequest;
 use App\Http\Requests\ServiceUpdateRequest;
 
-use App\Services\Service\StoreService;
-use App\Services\Service\ShowService;
-use App\Services\Service\IndexForCompanyService;
-use App\Services\Service\DestroyService;
-use App\Services\Service\UpdateService;
+use App\Http\Resources\ServiceResource;
+use App\Http\Resources\ServiceCollection;
 
+use App\Services\ServiceService;
 use App\Models\Service;
 
 class ServiceController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
+    protected $serviceService;
+    public function __construct(ServiceService $serviceService)
+    {
+        $this->serviceService = $serviceService;
+    }
+
     public function index()
     {
-        return response()->json(Service::Paginate(10), 200);
+        return response()->json(
+            new ServiceCollection(Service::Paginate(10))
+        );
     }
 
-    public function index_for_company(IndexForCompanyService $service, $company_id)
+    public function store(ServiceStoreRequest $request)
     {
-        return $service->handle($company_id);
+        $request = $request->validated();
+        return response()->json(
+            $this->serviceService->store(
+                $request['name'],
+                $request['company_id'],
+                $request['price_netto'],
+                $request['vat'])
+        );
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function show(Service $service)
     {
-        //
+        return response()->json(
+            new ServiceResource($service)
+        );
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(ServiceStoreRequest $request, StoreService $service)
+    public function update(ServiceUpdateRequest $request, Service $service)
     {
-        return $service->handle($request->all());
+        $request = $request->validated();
+        return response()->json(
+            $this->serviceService->update(
+                $request['name'],
+                $request['company_id'],
+                $request['price_netto'],
+                $request['vat'],
+                $request['active'],
+                $service)
+        );
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show(ShowService $service, $service_id)
+    public function destroy(Service $service)
     {
-        return $service->handle($service_id);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(ServiceUpdateRequest $request, UpdateService $service, $service_id)
-    {
-        return $service->handle($request->all(), $service_id);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(DestroyService $service, $service_id)
-    {
-        return $service->handle($service_id);
+        return response()->json(
+            $this->serviceService->destroy($service)
+        );
     }
 }

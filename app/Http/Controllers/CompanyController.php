@@ -7,89 +7,69 @@ use App\Http\Requests\CompanyStoreRequest;
 use App\Http\Requests\CompanyDeleteRequest;
 use App\Http\Requests\CompanyUpdateRequest;
 
-use App\Models\Company;
+use App\Http\Resources\CompanyResource;
+use App\Http\Resources\ServiceCollection;
+use App\Http\Resources\CompanyCollection;
 
-use App\Services\Company\StoreService;
-use App\Services\Company\ShowService;
-use App\Services\Company\UpdateService;
-use App\Services\Company\DestroyService;
+use App\Models\Company;
+Use App\Services\CompanyService;
 
 
 class CompanyController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    protected $companyService;
+
+    public function __construct(CompanyService $companyService)
+    {
+        $this->companyService = $companyService;
+    }
+
     public function index()
     {
-        return response(Company::paginate(10), 200);
+        return response()->json(
+            new CompanyCollection(Company::paginate(10))
+        );
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    //Returns all services for specific company
+    public function index_services(Company $company)
     {
-        //
+        return response()->json(
+            new ServiceCollection($company->GetServices()->paginate(10))
+        );
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(CompanyStoreRequest $request, StoreService $service)
+    public function store(CompanyStoreRequest $request)
     {
-        return $service->handle($request->all());
+        $request = $request->validated();
+        return response()->json(
+            $this->companyService->store($request['name'], $request['nip'])
+        );
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show(ShowService $service, $company_id)
+    public function show(Company $company)
     {
-        return $service->handle($company_id);
+        return response()->json(
+            new CompanyResource($company)
+        );
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
+    public function update(CompanyUpdateRequest $request, Company $company)
     {
-        //
+        $request = $request->validated();
+        return response()->json(
+            $this->companyService->update(
+                $request['name'],
+                $request['nip'],
+                $request['active'],
+                $company)
+        );
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(CompanyUpdateRequest $request, UpdateService $service, $company_id)
+    public function destroy(Company $company)
     {
-        return $service->handle($request->all(), $company_id);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(DestroyService $service, $company_id)
-    {
-        return $service->handle($company_id);
+        return response()->json(
+            $this->companyService->destroy($company)
+        );
     }
 }

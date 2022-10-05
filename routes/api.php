@@ -17,16 +17,8 @@ use App\Http\Controllers\ServiceController;
 */
 
 //Routes for Company operations
-Route::POST('add_company', [CompanyController::class, 'store']);
-Route::GET('company/{company_id}', [CompanyController::class, 'show']);
-Route::GET('companies', [CompanyController::class, 'index']);
-Route::PUT('update_company/{company_id}', [CompanyController::class, 'update']);
-Route::DELETE('delete_company/{company_id}', [CompanyController::class, 'destroy']);
+Route::apiResource('companies', CompanyController::class);
+Route::GET('companies/{company}/services', [CompanyController::class, 'index_services']);
 
 //Routes for service operations
-Route::POST('add_service', [ServiceController::class, 'store']);
-Route::GET('service/{service_id}', [ServiceController::class, 'show']);
-Route::GET('services', [ServiceController::class, 'index']);
-Route::GET('services/{company_id}', [ServiceController::class, 'index_for_company']);
-Route::PUT('update_service/{service_id}', [ServiceController::class, 'update']);
-Route::DELETE('delete_service/{service_id}', [ServiceController::class, 'destroy']);
+Route::apiResource('services', ServiceController::class);

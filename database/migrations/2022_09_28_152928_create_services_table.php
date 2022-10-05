@@ -6,29 +6,21 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
         Schema::create('services', function (Blueprint $table) {
             $table->id();
-            $table->string('Nazwa usługi');
-            $table->integer('Aktywna')->default(1);
-            $table->integer('Firma');
-            $table->double('Cena netto');
-            $table->integer('Vat');
+            $table->string('service_name');
+            $table->boolean('active')->default(true);
+            $table->foreignId('company_id')->constrained()->onDelete('cascade');
+            $table->integer('price_netto');
+            $table->integer('vat');
             $table->timestamps();
+            $table->unique(['service_name', 'company_id']);
+            $table->softDeletes();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
         Schema::dropIfExists('services');
