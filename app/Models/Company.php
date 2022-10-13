@@ -12,13 +12,24 @@ class Company extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'Nazwa firmy',
-        'NIP',
-        'Aktywna',
+        'company_name',
+        'nip',
+        'active',
     ];
 
-    public function GetServices()
+    public function services()
     {
         return $this->hasMany(Service::class);
+    }
+
+    protected static function booted()
+    {
+        static::deleted(function ($company) {
+            $company->services()->delete();
+        });
+
+        static::restored(function ($company) {
+            $company->services()->withTrashed()->restore();
+        });
     }
 }

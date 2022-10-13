@@ -2,74 +2,71 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Requests\CompanyStoreRequest;
-use App\Http\Requests\CompanyDeleteRequest;
 use App\Http\Requests\CompanyUpdateRequest;
+use App\Http\Requests\PaginationRequest;
 
 use App\Http\Resources\CompanyResource;
-use App\Http\Resources\ServiceCollection;
 use App\Http\Resources\CompanyCollection;
 
 use App\Models\Company;
 Use App\Services\CompanyService;
+use Illuminate\Http\JsonResponse;
 
 
 class CompanyController extends Controller
 {
-    protected $companyService;
 
-    public function __construct(CompanyService $companyService)
+
+    public function __construct(private readonly CompanyService $companyService)
     {
-        $this->companyService = $companyService;
+
     }
 
-    public function index()
+    public function index(PaginationRequest $request): JsonResponse
     {
         return response()->json(
-            new CompanyCollection(Company::paginate(10))
+            new CompanyCollection(Company::paginate($request->validated('count')))
         );
     }
 
-    //Returns all services for specific company
-    public function index_services(Company $company)
-    {
-        return response()->json(
-            new ServiceCollection($company->GetServices()->paginate(10))
-        );
-    }
-
-    public function store(CompanyStoreRequest $request)
+    public function store(CompanyStoreRequest $request): JsonResponse
     {
         $request = $request->validated();
+        $store = new CompanyResource($this->companyService->assignAttributes(
+            data_get($request, 'name'),
+            data_get($request, 'nip')
+        )->getCompany());
         return response()->json(
-            $this->companyService->store($request['name'], $request['nip'])
+            $store
         );
     }
 
-    public function show(Company $company)
+    public function show(Company $company): JsonResponse
     {
         return response()->json(
             new CompanyResource($company)
         );
     }
 
-    public function update(CompanyUpdateRequest $request, Company $company)
+    public function update(CompanyUpdateRequest $request, Company $company): JsonResponse
     {
         $request = $request->validated();
+        $update = new CompanyResource($this->companyService->setCompany($company)
+            ->assignAttributes(
+                data_get($request, 'name'),
+                data_get($request, 'nip'),
+                data_get($request, 'active'),
+            )->getCompany());
         return response()->json(
-            $this->companyService->update(
-                $request['name'],
-                $request['nip'],
-                $request['active'],
-                $company)
+            $update
         );
     }
 
-    public function destroy(Company $company)
+    public function destroy(Company $company): JsonResponse
     {
         return response()->json(
-            $this->companyService->destroy($company)
+            $company->delete()
         );
     }
 }

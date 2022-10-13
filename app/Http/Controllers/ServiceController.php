@@ -2,69 +2,74 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Requests\ServiceStoreRequest;
 use App\Http\Requests\ServiceUpdateRequest;
+use App\Http\Requests\PaginationRequest;
 
 use App\Http\Resources\ServiceResource;
 use App\Http\Resources\ServiceCollection;
 
 use App\Services\ServiceService;
 use App\Models\Service;
+use App\Models\Company;
 
 class ServiceController extends Controller
 {
 
-    protected $serviceService;
-    public function __construct(ServiceService $serviceService)
+    public function __construct(private readonly ServiceService $serviceService)
     {
-        $this->serviceService = $serviceService;
+
     }
 
-    public function index()
+    public function index(PaginationRequest $request, Company $company): JsonResponse
     {
         return response()->json(
-            new ServiceCollection(Service::Paginate(10))
+            new ServiceCollection($company->services()->paginate($request->validated('count')))
         );
     }
 
-    public function store(ServiceStoreRequest $request)
+    public function store(ServiceStoreRequest $request): JsonResponse
     {
         $request = $request->validated();
+        $store = new ServiceResource($this->serviceService->assignAttributes(
+            data_get($request, 'name'),
+            data_get($request, 'company_id'),
+            data_get($request, 'price_netto'),
+            data_get($request, 'vat'),
+        )->getService());
         return response()->json(
-            $this->serviceService->store(
-                $request['name'],
-                $request['company_id'],
-                $request['price_netto'],
-                $request['vat'])
+            $store
         );
     }
 
-    public function show(Service $service)
+    public function show(Service $service): JsonResponse
     {
         return response()->json(
             new ServiceResource($service)
         );
     }
 
-    public function update(ServiceUpdateRequest $request, Service $service)
+    public function update(ServiceUpdateRequest $request, Service $service): JsonResponse
     {
         $request = $request->validated();
+        $update = new ServiceResource($this->serviceService->setService($service)->assignAttributes(
+            data_get($request, 'name'),
+            data_get($request, 'company_id'),
+            data_get($request, 'price_netto'),
+            data_get($request, 'vat'),
+            data_get($request, 'active'),
+        )->getService());
         return response()->json(
-            $this->serviceService->update(
-                $request['name'],
-                $request['company_id'],
-                $request['price_netto'],
-                $request['vat'],
-                $request['active'],
-                $service)
+            $update
         );
     }
 
-    public function destroy(Service $service)
+    public function destroy(Service $service): JsonResponse
     {
         return response()->json(
-            $this->serviceService->destroy($service)
+            $service->delete()
         );
     }
 }

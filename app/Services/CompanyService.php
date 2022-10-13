@@ -5,41 +5,29 @@ use App\Models\Company;
 
 class CompanyService
 {
-    public function store(string $name, string $nip)
+    public function __construct(private Company $company = new Company())
     {
-        $company = new Company;
-        $company['company_name'] = $name;
-        $company['nip'] = $nip;
-        if($company->save())
-        {
-            return 'Pomyślnie dodano firmę';
-        }else{
-            return 'Wystąpił nieoczekiwany błąd';
-        }
 
     }
 
-    public function update(string $name, string $nip, bool $active, object $company)
+    public function setCompany(Company $company): self
     {
-        $company['company_name'] = $name;
-        $company['nip'] = $nip;
-        $company['active'] = $active;
-        if($company->save())
-        {
-            return 'Pomyślnie zedytowano dane firmy';
-        }else{
-            return 'Wystąpił nieoczekiwany błąd';
-        }
+        $this->company = $company;
+        return $this;
     }
 
-    public function destroy(object $company)
+    public function assignAttributes(string $name, string $nip, bool $active = true): self
     {
-        if($company->delete())
-        {
-            return 'Pomyślnie usunięto firmę z bazy danych';
-        }else{
-            return 'Wystąpił nieoczekiwany błąd';
-        }
+        $this->company->company_name = $name;
+        $this->company->nip = $nip;
+        $this->company->active = $active;
+        $this->company->save();
+        return $this;
+    }
+
+    public function getCompany(): Company
+    {
+        return $this->company;
     }
 }
 

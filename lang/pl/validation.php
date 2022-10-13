@@ -87,8 +87,11 @@ return [
     */
 
     'custom' => [
-        'attribute-name' => [
-            'rule-name' => 'custom-message',
+        'nip' => [
+            'unique' => 'Istnieje już firma z takim numerem NIP',
+        ],
+        'company_id' => [
+            'unique' => 'Ta firma posiada już taką usługę',
         ],
     ],
 
@@ -103,6 +106,15 @@ return [
     |
     */
 
-    'attributes' => [],
+    'attributes' => [
+        'company_id' => 'id firmy',
+        'company_name' => 'nazwa firmy',
+        'nip' => 'numer nip',
+        'service_id' => 'id usługi',
+        'service_name' => 'nazwa usługi',
+        'active' => 'aktywna',
+        'price_netto' => 'cena netto',
+        'vat' => 'stawka vat',
+    ],
 
 ];

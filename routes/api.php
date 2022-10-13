@@ -18,7 +18,10 @@ use App\Http\Controllers\ServiceController;
 
 //Routes for Company operations
 Route::apiResource('companies', CompanyController::class);
-Route::GET('companies/{company}/services', [CompanyController::class, 'index_services']);
-
+Route::apiResource('companies.services', ServiceController::class, [
+    'only' => ['index']
+]);
 //Routes for service operations
-Route::apiResource('services', ServiceController::class);
+Route::apiResource('services', ServiceController::class, [
+    'except' => ['index']
+]);

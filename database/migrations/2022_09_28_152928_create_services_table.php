@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('service_name');
             $table->boolean('active')->default(true);
-            $table->foreignId('company_id')->constrained()->onDelete('cascade');
+            $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
             $table->integer('price_netto');
             $table->integer('vat');
             $table->timestamps();

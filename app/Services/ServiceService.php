@@ -5,46 +5,31 @@ use App\Models\Service;
 
 class ServiceService
 {
-
-    public function store(string $name, int $company_id, float $price_netto, int $vat)
+    public function __construct(private Service $service = new Service())
     {
-        $service = new Service;
-        $service['service_name'] = $name;
-        $service['company_id'] = $company_id;
-        $service['price_netto'] = $price_netto*100;
-        $service['vat'] = $vat;
 
-        if($service->save())
-        {
-            return 'Pomyślnie dodano usługę';
-        }else{
-            return 'Wystąpił nieoczekiwany błąd';
-        }
     }
 
-    public function update(string $name, int $company_id, float $price_netto, int $vat, bool $active, object $service)
+    public function setService(Service $service): self
     {
-        $service['service_name'] = $name;
-        $service['company_id'] = $company_id;
-        $service['active'] = $active;
-        $service['price_netto'] = $price_netto*100;
-        $service['vat'] = $vat;
-        if($service->save())
-        {
-            return 'Pomyślnie zedytowano dane usługi';
-        }else{
-            return 'Usługa o takim ID nie istnieje';
-        }
+        $this->service = $service;
+        return $this;
     }
 
-    public function destroy(object $service)
+    public function assignAttributes(string $name, int $company_id, float $price_netto, int $vat, bool $active = true): self
     {
-        if($service->delete())
-        {
-            return 'Pomyślnie usunięto usługę';
-        }else{
-            return 'Wystąpił nieoczekiwany błąd';
-        }
+        $this->service->service_name = $name;
+        $this->service->company_id = $company_id;
+        $this->service->price_netto = $price_netto;
+        $this->service->vat = $vat;
+        $this->service->active = $active;
+        $this->service->save();
+        return $this;
+    }
+
+    public function getService(): Service
+    {
+        return $this->service;
     }
 }
 
