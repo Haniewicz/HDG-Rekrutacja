@@ -34,13 +34,13 @@ class CompanyController extends Controller
     {
         $request = $request->validated();
 
-        $store = $this->companyService->assignAttributes(
+        $company = $this->companyService->assignAttributes(
             data_get($request, 'name'),
             data_get($request, 'nip')
         )->getCompany();
 
         return response()->json(
-            new CompanyResource($store)
+            new CompanyResource($company)
         );
     }
 
@@ -55,7 +55,7 @@ class CompanyController extends Controller
     {
         $request = $request->validated();
 
-        $update = $this->companyService->setCompany($company)
+        $company = $this->companyService->setCompany($company)
             ->assignAttributes(
                 data_get($request, 'name'),
                 data_get($request, 'nip'),
@@ -63,7 +63,7 @@ class CompanyController extends Controller
             )->getCompany();
 
         return response()->json(
-            new CompanyResource($update)
+            new CompanyResource($company)
         );
     }
 

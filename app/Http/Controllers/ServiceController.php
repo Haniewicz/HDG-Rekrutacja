@@ -34,7 +34,7 @@ class ServiceController extends Controller
     {
         $request = $request->validated();
 
-        $store = $this->serviceService->assignAttributes(
+        $service = $this->serviceService->assignAttributes(
             data_get($request, 'name'),
             data_get($request, 'company_id'),
             data_get($request, 'price_netto'),
@@ -42,7 +42,7 @@ class ServiceController extends Controller
         )->getService();
 
         return response()->json(
-            new ServiceResource($store)
+            new ServiceResource($service)
         );
     }
 
@@ -57,7 +57,7 @@ class ServiceController extends Controller
     {
         $request = $request->validated();
 
-        $update = $this->serviceService->setService($service)->assignAttributes(
+        $service = $this->serviceService->setService($service)->assignAttributes(
             data_get($request, 'name'),
             data_get($request, 'company_id'),
             data_get($request, 'price_netto'),
@@ -66,7 +66,7 @@ class ServiceController extends Controller
         )->getService();
 
         return response()->json(
-            new ServiceResource($update)
+            new ServiceResource($service)
         );
     }
 
