@@ -33,14 +33,14 @@ class ServiceController extends Controller
     public function store(ServiceStoreRequest $request): JsonResponse
     {
         $request = $request->validated();
-        $store = new ServiceResource($this->serviceService->assignAttributes(
+        $store = $this->serviceService->assignAttributes(
             data_get($request, 'name'),
             data_get($request, 'company_id'),
             data_get($request, 'price_netto'),
             data_get($request, 'vat'),
-        )->getService());
+        )->getService();
         return response()->json(
-            $store
+            new ServiceResource($store)
         );
     }
 
@@ -54,15 +54,15 @@ class ServiceController extends Controller
     public function update(ServiceUpdateRequest $request, Service $service): JsonResponse
     {
         $request = $request->validated();
-        $update = new ServiceResource($this->serviceService->setService($service)->assignAttributes(
+        $update = $this->serviceService->setService($service)->assignAttributes(
             data_get($request, 'name'),
             data_get($request, 'company_id'),
             data_get($request, 'price_netto'),
             data_get($request, 'vat'),
             data_get($request, 'active'),
-        )->getService());
+        )->getService();
         return response()->json(
-            $update
+            new ServiceResource($update)
         );
     }
 

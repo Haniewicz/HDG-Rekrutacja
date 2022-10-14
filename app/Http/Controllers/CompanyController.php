@@ -33,12 +33,12 @@ class CompanyController extends Controller
     public function store(CompanyStoreRequest $request): JsonResponse
     {
         $request = $request->validated();
-        $store = new CompanyResource($this->companyService->assignAttributes(
+        $store = $this->companyService->assignAttributes(
             data_get($request, 'name'),
             data_get($request, 'nip')
-        )->getCompany());
+        )->getCompany();
         return response()->json(
-            $store
+            new CompanyResource($store)
         );
     }
 
@@ -52,14 +52,14 @@ class CompanyController extends Controller
     public function update(CompanyUpdateRequest $request, Company $company): JsonResponse
     {
         $request = $request->validated();
-        $update = new CompanyResource($this->companyService->setCompany($company)
+        $update = $this->companyService->setCompany($company)
             ->assignAttributes(
                 data_get($request, 'name'),
                 data_get($request, 'nip'),
                 data_get($request, 'active'),
-            )->getCompany());
+            )->getCompany();
         return response()->json(
-            $update
+            new CompanyResource($update)
         );
     }
 
